@@ -1,0 +1,70 @@
+import React, { useState } from 'react';
+import { useGlobalContext } from '../context';
+
+const Reviews = ({ idMeal }) => {
+  const { meals } = useGlobalContext();
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+  const [reviews, setReviews] = useState([]);
+
+  const handleRating = (event) => {
+    setRating(event.target.value);
+  };
+
+  const handleReviewText = (event) => {
+    setReviewText(event.target.value);
+  };
+
+  const handleSubmitReview = () => {
+    if (rating > 0 && reviewText) {
+      const newReview = { idMeal, rating, reviewText };
+      setReviews([...reviews, newReview]);
+      setRating(0);
+      setReviewText('');
+    }
+  };
+
+  const selectedMeal = meals.find((meal) => meal.idMeal === idMeal);
+
+  return (
+    <div className="reviews">
+      <h4>Rate and Review {selectedMeal?.strMeal}</h4>
+      <div className="rating">
+        <select value={rating} onChange={handleRating}>
+          <option value={0}>Select Rating</option>
+          {[1, 2, 3, 4, 5].map((num) => (
+            <option key={num} value={num}>
+              {num} Stars
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <textarea
+        value={reviewText}
+        onChange={handleReviewText}
+        placeholder="Write your review here"
+      ></textarea>
+
+      <button className="submit-review" onClick={handleSubmitReview}>
+        Submit Review
+      </button>
+
+      <h5>Reviews:</h5>
+      <div className="reviews-list">
+        {reviews.length > 0 ? (
+          reviews.map((review, index) => (
+            <div key={index} className="review-item">
+              <p>Rating: {review.rating} Stars</p>
+              <p>{review.reviewText}</p>
+            </div>
+          ))
+        ) : (
+          <p>No reviews yet.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Reviews;
